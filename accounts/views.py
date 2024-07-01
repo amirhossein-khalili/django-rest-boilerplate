@@ -11,14 +11,9 @@ class UserRegister(APIView):
 
         ser_data = UserRegisterSerializer(data=request.data)
 
-        # check data is valid or not
+        # check data is valid or not and create a new user
         if ser_data.is_valid():
-
-            User.objects.create_user(
-                username=ser_data.validated_data["username"],
-                email=ser_data.validated_data["email"],
-                password=ser_data.validated_data["password"],
-            )
+            user = ser_data.create(ser_data.validated_data)
 
             return Response(
                 {"message": "User created successfully", "user": ser_data.data}
