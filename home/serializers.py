@@ -18,6 +18,9 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = "__all__"
 
+    def get_answers (self , obj):
+        result = obj.answers.all()
+        return  AnswerSerializer(instance=result , many=True).data
     # def create(self, validated_data):
     #     request = self.context.get("request")
     #     validated_data["user"] = request.user
