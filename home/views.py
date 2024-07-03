@@ -35,10 +35,20 @@ class Home(APIView):
 class QuestionView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        questions = Question.objects.all()
-        ser_data = QuestionSerializer(instance=questions, many=True).data
-        return Response(ser_data, status=status.HTTP_200_OK)
+    def get(self, request, pk=None):
+        if pk is not None:
+            try:
+                question = Question.objects.get(pk=pk)
+                ser_data = QuestionSerializer(instance=question).data
+                return Response(ser_data, status=status.HTTP_200_OK)
+            except Question.DoesNotExist:
+                return Response(
+                    {"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            questions = Question.objects.all()
+            ser_data = QuestionSerializer(instance=questions, many=True).data
+            return Response(ser_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         request.data["user"] = request.user.id
@@ -48,12 +58,20 @@ class QuestionView(APIView):
             return Response(ser_data.data, status=status.HTTP_201_CREATED)
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self, request, pk):
+        question = Question.objects.get(pk=pk)
+        ser_data = QuestionSerializer(
+            instance=question, data=request.data, partial=True
+        )
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(ser_data.data, status=status.HTTP_200_OK)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# def put(self, request, pk):
-#     pass
-
-# def get(self, request, pk):
-#     pass
+    def delete(self, request, pk):
+        question = Question.objects.get(pk=pk)
+        question.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class AnswerView(APIView):
