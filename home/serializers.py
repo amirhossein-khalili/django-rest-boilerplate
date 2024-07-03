@@ -12,6 +12,7 @@ class PersonSerializer(serializers.Serializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     # user = serializers.PrimaryKeyRelatedField(read_only=True)
+    answers = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
