@@ -1,14 +1,14 @@
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Person
-from .serializers import PersonSerializer
+from .models import Answer, Person, Question
+from .serializers import AnswerSerializer, PersonSerializer, QuestionSerializer
 
 
 class Home(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
 
@@ -30,3 +30,47 @@ class Home(APIView):
             {"message": f"hello mr {cus_name} , how about   {friend_name} "},
             status=status.HTTP_201_CREATED,
         )
+
+
+class QuestionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        questions = Question.objects.all()
+        ser_data = QuestionSerializer(instance=questions, many=True).data
+        return Response(ser_data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        request.data["user"] = request.user.id
+        ser_data = QuestionSerializer(data=request.data)
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# def put(self, request, pk):
+#     pass
+
+# def get(self, request, pk):
+#     pass
+
+
+class AnswerView(APIView):
+    def get(self, request):
+        answers = Answer.objects.all()
+        ser_data = AnswerSerializer(instance=answers, many=True).data
+        return Response(ser_data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        ser_data = AnswerSerializer(data=request.data)
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(ser_data.data, status=status.HTTP_201_CREATED)
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def put(self, request, pk):
+    #     pass
+
+    # def get(self, request, pk):
+    #     pass
