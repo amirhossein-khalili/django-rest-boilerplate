@@ -59,19 +59,25 @@ class QuestionView(APIView):
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, pk):
-        question = Question.objects.get(pk=pk)
-        ser_data = QuestionSerializer(
-            instance=question, data=request.data, partial=True
-        )
-        if ser_data.is_valid():
-            ser_data.save()
-            return Response(ser_data.data, status=status.HTTP_200_OK)
-        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            question = Question.objects.get(pk=pk)
+            ser_data = QuestionSerializer(
+                instance=question, data=request.data, partial=True
+            )
+            if ser_data.is_valid():
+                ser_data.save()
+                return Response(ser_data.data, status=status.HTTP_200_OK)
+            return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Question.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk):
-        question = Question.objects.get(pk=pk)
-        question.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            question = Question.objects.get(pk=pk)
+            question.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Question.DoesNotExist:
+            return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AnswerView(APIView):
