@@ -36,3 +36,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 "Password and repeat password must match!!"
             )
         return data
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
