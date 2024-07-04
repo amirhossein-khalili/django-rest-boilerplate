@@ -2,8 +2,12 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
-from .serializers import UserRegisterSerializer
+from .serializers import UserRegisterSerializer, UserSerializer
 
 
 class UserRegister(APIView):
@@ -22,3 +26,34 @@ class UserRegister(APIView):
             )
 
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserViewSet(viewsets.ViewSet):
+
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    queryset = User.objects.all()
+
+    def list(self, request):
+        ser_data = UserSerializer(instance=self.queryset, many=True)
+        return Response(data=ser_data.data)
+
+    def retrieve(self, request, pk=None):
+        user = get_object_or_404(self.queryset, pk=pk)
+        ser_data = UserSerializer(instance=user)
+        return Response(data=ser_data.data, status=status.HTTP_200_OK)
+
+    def partial_update(self, request, pk=None):
+        user = get_object_or_404(self.queryset, pk=pk)
+        ser_data = UserSerializer(instance=user, data=request.data, partial=True)
+        if ser_data.is_valid():
+            ser_data.save()
+            return Response(data=ser_data.data, status=status.HTTP_200_OK)
+        return Response(data=ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def destroy(self, request, pk=None):
+        user = get_object_or_404(self.queryset, pk=pk)
+        user.is_active = False
+        user.save()
+        return Response(
+            data={"message": "user deactivated "}, status=status.HTTP_200_OK
+        )
