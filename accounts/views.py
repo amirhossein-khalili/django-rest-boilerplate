@@ -1,16 +1,16 @@
 from django.contrib.auth.models import User
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, viewsets
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 
 from .serializers import UserRegisterSerializer, UserSerializer
 
 
 class UserRegister(APIView):
+
+    serializer_class = UserRegisterSerializer
 
     def post(self, request):
 
@@ -29,12 +29,24 @@ class UserRegister(APIView):
 
 
 class UserViewSet(viewsets.ViewSet):
+    """
+    this is a view set that
+
+    do crud operations on the
+
+    users model
+    """
 
     permission_classes = [IsAuthenticated, IsAdminUser]
+
+    serializer_class = UserSerializer
+
     queryset = User.objects.all()
 
     def list(self, request):
+
         ser_data = UserSerializer(instance=self.queryset, many=True)
+
         return Response(data=ser_data.data)
 
     def retrieve(self, request, pk=None):

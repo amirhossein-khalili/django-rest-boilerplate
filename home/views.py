@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from permissions import IsOwnerReadOnly
 
 from .models import Answer, Person, Question
@@ -34,14 +35,28 @@ class Home(APIView):
 
 
 class QuestionListView(APIView):
+    """
+    this can get all the questions list
+
+    it also contains answer of each questions with it
+
+    and if the you delete question answer will delete too
+
+    """
+
+    serializer_class = QuestionSerializer
 
     def get(self, request, pk=None):
         if pk is not None:
+
             try:
+
                 question = Question.objects.get(pk=pk)
                 ser_data = QuestionSerializer(instance=question).data
                 return Response(ser_data, status=status.HTTP_200_OK)
+
             except Question.DoesNotExist:
+
                 return Response(
                     {"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND
                 )
@@ -52,6 +67,8 @@ class QuestionListView(APIView):
 
 
 class QuestionGetDataView(APIView):
+
+    serializer_class = QuestionSerializer
 
     def get(self, request, pk=None):
         if pk is not None:
@@ -71,6 +88,8 @@ class QuestionGetDataView(APIView):
 
 class QuestionCreateView(APIView):
 
+    serializer_class = QuestionSerializer
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -83,6 +102,8 @@ class QuestionCreateView(APIView):
 
 
 class QuestionUpdateView(APIView):
+
+    serializer_class = QuestionSerializer
 
     permission_classes = [IsOwnerReadOnly]
 
@@ -103,6 +124,8 @@ class QuestionUpdateView(APIView):
 
 class QuestionDeleteView(APIView):
 
+    serializer_class = QuestionSerializer
+
     permission_classes = [IsOwnerReadOnly]
 
     def delete(self, request, pk):
@@ -117,6 +140,8 @@ class QuestionDeleteView(APIView):
 
 
 class AnswerListView(APIView):
+
+    serializer_class = AnswerSerializer
 
     def get(self, request, pk=None):
         if pk is not None:
@@ -136,6 +161,8 @@ class AnswerListView(APIView):
 
 class AnswerGetDataView(APIView):
 
+    serializer_class = AnswerSerializer
+
     def get(self, request, pk=None):
         if pk is not None:
             try:
@@ -154,6 +181,8 @@ class AnswerGetDataView(APIView):
 
 class AnswerCreateView(APIView):
 
+    serializer_class = AnswerSerializer
+
     def post(self, request):
         request.data["user"] = request.user.id
         ser_data = AnswerSerializer(data=request.data)
@@ -164,6 +193,8 @@ class AnswerCreateView(APIView):
 
 
 class AnswerUpdateView(APIView):
+
+    serializer_class = AnswerSerializer
 
     def patch(self, request, pk):
         try:
@@ -178,6 +209,8 @@ class AnswerUpdateView(APIView):
 
 
 class AnswerDeleteView(APIView):
+
+    serializer_class = AnswerSerializer
 
     def delete(self, request, pk):
         try:
