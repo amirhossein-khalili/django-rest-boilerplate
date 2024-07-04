@@ -2,6 +2,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from permissions import IsOwnerReadOnly
 
 from .models import Answer, Person, Question
 from .serializers import AnswerSerializer, PersonSerializer, QuestionSerializer
@@ -70,6 +71,8 @@ class QuestionGetDataView(APIView):
 
 class QuestionCreateView(APIView):
 
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         request.data["user"] = request.user.id
         ser_data = QuestionSerializer(data=request.data)
@@ -81,9 +84,12 @@ class QuestionCreateView(APIView):
 
 class QuestionUpdateView(APIView):
 
+    permission_classes = [IsOwnerReadOnly]
+
     def patch(self, request, pk):
         try:
             question = Question.objects.get(pk=pk)
+            self.check_object_permissions(request, question)
         except Question.DoesNotExist:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         ser_data = QuestionSerializer(
@@ -97,9 +103,12 @@ class QuestionUpdateView(APIView):
 
 class QuestionDeleteView(APIView):
 
+    permission_classes = [IsOwnerReadOnly]
+
     def delete(self, request, pk):
         try:
             question = Question.objects.get(pk=pk)
+            self.check_object_permissions(request, question)
         except Question.DoesNotExist:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
