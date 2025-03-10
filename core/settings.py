@@ -43,7 +43,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "A.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -61,7 +61,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "A.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
@@ -137,7 +137,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {"anon": "100/day", "user": "1000/day"},
-    "DEFAULT_METADATA_CLASS": "A.metadata.CustomMetadata",
+    "DEFAULT_METADATA_CLASS": "core.metadata.CustomMetadata",
 }
 
 
