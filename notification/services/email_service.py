@@ -3,6 +3,7 @@ from typing import Dict, List
 from django.conf import settings
 from django.core.mail import send_mail
 
+from notification.enums import NotificationType
 from notification.models import Notification
 from notification.services.base import NotificationService
 
@@ -20,23 +21,22 @@ class EmailNotificationService(NotificationService):
         :param message: The email content.
         """
         subject = "New Notification"
-        from_email = settings.DEFAULT_FROM_EMAIL  # Ensure this is set in settings.py
+        from_email = settings.DEFAULT_FROM_EMAIL
 
         try:
             send_mail(subject, message, from_email, [recipient])
             Notification.objects.create(
                 recipient=recipient,
                 message=message,
-                notification_type=Notification.EMAIL,
+                notification_type=NotificationType.EMAIL.value,
                 status=True,
             )
         except Exception as e:
-            # Log the error (optional)
             print(f"Failed to send email: {e}")
             Notification.objects.create(
                 recipient=recipient,
                 message=message,
-                notification_type=Notification.EMAIL,
+                notification_type=NotificationType.EMAIL.value,
                 status=False,
             )
 
@@ -47,7 +47,7 @@ class EmailNotificationService(NotificationService):
         :return: A list of dictionaries containing notification details.
         """
         notifications = Notification.objects.filter(
-            notification_type=Notification.EMAIL
+            notification_type=NotificationType.EMAIL.value,
         ).order_by("-sent_at")
         return [
             {

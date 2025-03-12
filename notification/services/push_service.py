@@ -4,6 +4,7 @@ import requests
 from django.conf import settings
 
 from notification.models import Notification
+from notification.enums import NotificationType
 from notification.services.base import NotificationService
 
 
@@ -17,7 +18,7 @@ class PushNotificationService(NotificationService):
         Initializes Firebase FCM API credentials.
         """
         self.fcm_api_url = "https://fcm.googleapis.com/fcm/send"
-        self.fcm_server_key = settings.FCM_SERVER_KEY  # Define this in settings.py
+        self.fcm_server_key = settings.FCM_SERVER_KEY
 
     def send_notification(self, recipient: str, message: str) -> None:
         """
@@ -44,11 +45,10 @@ class PushNotificationService(NotificationService):
             print(f"Failed to send push notification: {e}")
             success = False
 
-        # Save notification status in the database
         Notification.objects.create(
             recipient=recipient,
             message=message,
-            notification_type=Notification.PUSH,
+            notification_type=NotificationType.PUSH.value,
             status=success,
         )
 
@@ -59,7 +59,7 @@ class PushNotificationService(NotificationService):
         :return: A list of dictionaries containing notification details.
         """
         notifications = Notification.objects.filter(
-            notification_type=Notification.PUSH
+            notification_type=NotificationType.PUSH.value,
         ).order_by("-sent_at")
         return [
             {

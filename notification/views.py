@@ -1,52 +1,40 @@
-from rest_framework import status, viewsets
+from rest_framework import pagination, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from notification.factories.factory_selector import get_notification_factory
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
 
 
+class NotificationPagination(pagination.PageNumberPagination):
+    """
+    Custom pagination for notifications.
+    """
+
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 50
+
+
 class NotificationViewSet(viewsets.ViewSet):
     """
-    API endpoints for sending and listing notifications.
+    API endpoints for listing notifications.
+    Users can only see their own notifications.
     """
+
+    permission_classes = [permissions.IsAuthenticated]
+    pagination_class = NotificationPagination
 
     def list(self, request):
         """
-        Retrieve a list of sent notifications.
+        Retrieve a paginated list of sent notifications for the authenticated user.
         """
-        notifications = Notification.objects.all().order_by("-sent_at")
-        serializer = NotificationSerializer(notifications, many=True)
-        return Response(serializer.data)
+        notifications = Notification.objects.filter(
+            recipient=request.user.email
+        ).order_by("-sent_at")
 
-    @action(detail=False, methods=["post"])
-    def send(self, request):
-        """
-        Send a notification via Email, SMS, or Push.
+        paginator = self.pagination_class()
+        paginated_notifications = paginator.paginate_queryset(notifications, request)
 
-        Example JSON request:
-        {
-            "recipient": "recipient@example.com",
-            "message": "Hello, this is a test notification!"
-        }
-        """
-        recipient = request.data.get("recipient")
-        message = request.data.get("message")
-
-        if not recipient or not message:
-            return Response(
-                {"error": "Recipient and message are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Get the notification factory based on settings
-        factory = get_notification_factory()
-        notification_service = factory.create_notification_service()
-
-        # Send the notification
-        notification_service.send_notification(recipient, message)
-
-        return Response(
-            {"success": "Notification sent successfully."}, status=status.HTTP_200_OK
-        )
+        serializer = NotificationSerializer(paginated_notifications, many=True)
+        return paginator.get_paginated_response(serializer.data)

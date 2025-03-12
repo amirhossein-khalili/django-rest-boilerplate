@@ -13,8 +13,8 @@ class KavenegarSMSProvider(BaseSMSProvider):
         """
         Initializes the Kavenegar API instance.
         """
-        self.api_key = settings.KAVENEGAR_API_KEY
-        self.sender_number = settings.KAVENEGAR_SENDER
+        self.api_key = settings.SMS_SERVER_API_KEY
+        self.sender_number = settings.SMS_NUMBER_SENDER
 
     def send_sms(self, recipient: str, message: str) -> bool:
         """

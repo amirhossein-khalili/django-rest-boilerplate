@@ -1,6 +1,7 @@
 from typing import Dict, List
 
 from notification.models import Notification
+from notification.enums import NotificationType
 from notification.services.base import NotificationService
 from notification.services.sms_providers.base_sms_provider import BaseSMSProvider
 
@@ -27,11 +28,10 @@ class SMSNotificationService(NotificationService):
         """
         status = self.sms_provider.send_sms(recipient, message)
 
-        # Save the notification in the database
         Notification.objects.create(
             recipient=recipient,
             message=message,
-            notification_type=Notification.SMS,
+            notification_type=NotificationType.SMS.value,
             status=status,
         )
 
@@ -42,7 +42,7 @@ class SMSNotificationService(NotificationService):
         :return: A list of dictionaries containing notification details.
         """
         notifications = Notification.objects.filter(
-            notification_type=Notification.SMS
+            notification_type=NotificationType.SMS.value
         ).order_by("-sent_at")
         return [
             {

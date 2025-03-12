@@ -6,6 +6,7 @@ from notification.views import NotificationViewSet
 router = DefaultRouter()
 router.register(r"notifications", NotificationViewSet, basename="notification")
 
+app_name = "notification"
 urlpatterns = [
     path("", include(router.urls)),
 ]
