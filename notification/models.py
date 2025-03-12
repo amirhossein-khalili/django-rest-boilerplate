@@ -1,23 +1,17 @@
 from django.db import models
 
+from .enums import NotificationChoices
+
 
 class Notification(models.Model):
-    EMAIL = "email"
-    SMS = "sms"
-    PUSH = "push"
-
-    NOTIFICATION_TYPES = [
-        (EMAIL, "Email"),
-        (SMS, "SMS"),
-        (PUSH, "Push Notification"),
-    ]
-
     recipient = models.CharField(
         max_length=255, help_text="Recipient's email, phone number, or device ID"
     )
     message = models.TextField(help_text="Notification content")
     notification_type = models.CharField(
-        max_length=10, choices=NOTIFICATION_TYPES, help_text="Type of notification"
+        max_length=10,
+        choices=NotificationChoices.choices,
+        help_text="Type of notification",
     )
     sent_at = models.DateTimeField(
         auto_now_add=True, help_text="Timestamp when the notification was sent"
