@@ -31,11 +31,11 @@ def notification_service(notification_type=None):
         raise ValueError(f"Invalid notification type '{type_str}' specified")
 
     if notification_type == NotificationType.SMS:
-        return SMSNotificationFactory()
+        return SMSNotificationFactory().create_notification_service()
     elif notification_type == NotificationType.EMAIL:
-        return EmailNotificationFactory()
+        return EmailNotificationFactory().create_notification_service()
     elif notification_type == NotificationType.PUSH:
-        return PushNotificationFactory()
+        return PushNotificationFactory().create_notification_service()
     elif settings.DEBUG == True:
         return DevNotificationFactory().create_notification_service()
     else:

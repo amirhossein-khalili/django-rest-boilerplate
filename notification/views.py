@@ -1,9 +1,10 @@
 from rest_framework import pagination, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.response import Response
 
 from notification.models import Notification
 from notification.serializers import NotificationSerializer
+
+from .enums import NotificationType
 
 
 class NotificationPagination(pagination.PageNumberPagination):
@@ -19,7 +20,7 @@ class NotificationPagination(pagination.PageNumberPagination):
 class NotificationViewSet(viewsets.ViewSet):
     """
     API endpoints for listing notifications.
-    Users can only see their own notifications.
+    Users can only see their own push notifications (in apps or website notifications).
     """
 
     permission_classes = [permissions.IsAuthenticated]
@@ -30,7 +31,7 @@ class NotificationViewSet(viewsets.ViewSet):
         Retrieve a paginated list of sent notifications for the authenticated user.
         """
         notifications = Notification.objects.filter(
-            recipient=request.user.email
+            notification_type=NotificationType.PUSH, recipient=request.user.email
         ).order_by("-sent_at")
 
         paginator = self.pagination_class()
