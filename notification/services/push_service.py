@@ -3,8 +3,8 @@ from typing import Dict, List
 import requests
 from django.conf import settings
 
-from notification.models import Notification
 from notification.enums import NotificationType
+from notification.models import Notification
 from notification.services.base import NotificationService
 
 

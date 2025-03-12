@@ -1,8 +1,7 @@
-# from django.conf import settings
+from django.conf import settings
 
 from notification.enums import NotificationType
 from notification.factories.dev_factory import DevNotificationFactory
-
 from notification.factories.email_factory import EmailNotificationFactory
 from notification.factories.push_factory import PushNotificationFactory
 from notification.factories.sms_factory import SMSNotificationFactory
@@ -37,7 +36,7 @@ def notification_service(notification_type=None):
         return EmailNotificationFactory()
     elif notification_type == NotificationType.PUSH:
         return PushNotificationFactory()
-    elif notification_type == NotificationType.DEBUG:
+    elif settings.DEBUG == True:
         return DevNotificationFactory().create_notification_service()
     else:
         raise ValueError(f"Invalid notification type '{type_str}' specified")

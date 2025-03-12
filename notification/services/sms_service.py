@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from notification.models import Notification
 from notification.enums import NotificationType
+from notification.models import Notification
 from notification.services.base import NotificationService
 from notification.services.sms_providers.base_sms_provider import BaseSMSProvider
 
