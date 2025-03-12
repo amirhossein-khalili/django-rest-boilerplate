@@ -1,5 +1,10 @@
+import os
 from datetime import timedelta
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-0f#ryse7db4hhjlew22^0-!k&q769(hyag5^fymtyb5d*97)-0"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,6 +35,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "accounts.apps.AccountsConfig",
+    "notification.apps.NotificationConfig",
 ]
 
 MIDDLEWARE = [
@@ -124,6 +130,8 @@ SPECTACULAR_SETTINGS = {
 
 
 REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
@@ -135,7 +143,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"anon": "100/day", "user": "1000/day"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "1000/day", "user": "10000/day"},
     "DEFAULT_METADATA_CLASS": "core.metadata.CustomMetadata",
 }
 
@@ -174,19 +182,18 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = "smtp.gmail.com"
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "fix@gmail.com"
-EMAIL_HOST_PASSWORD = "fix"
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 DEFAULT_NOTIFICATION_TYPE = "email"
 
-# Kavenegar SMS Configuration
-KAVENEGAR_API_KEY = "KAVENEGAR_API_KEY"
-KAVENEGAR_SENDER = "SENDER_NUMBER"
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = "Django boilerplate"
 
-# Firebase Cloud Messaging Configuration
-FCM_SERVER_KEY = "FIREBASE_SERVER_KEY"
+SMS_SERVER_API_KEY = os.environ.get("SMS_SERVER_API_KEY")
+SMS_NUMBER_SENDER = os.environ.get("SENDER_NUMBER")
+
+FCM_SERVER_KEY = os.environ.get("FIREBASE_SERVER_KEY")
