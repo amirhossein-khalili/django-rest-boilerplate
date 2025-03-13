@@ -17,7 +17,7 @@ class EmailNotificationService(NotificationService, NotificationMixin):
         """
         Sends an email using Django's email backend.
         """
-        subject = "New Notification"
+        subject = setting.DEFAULT_SUBJECT_EMAIL
         from_email = settings.DEFAULT_FROM_EMAIL
 
         try:

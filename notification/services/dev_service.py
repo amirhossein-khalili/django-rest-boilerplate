@@ -17,11 +17,7 @@ class DevNotificationService(NotificationService):
         """
         Print the notification to the terminal and store it in memory.
         """
-        print("=======================")
-        print(f"[DEV] Notification to {recipient}")
-        print("=======================")
-        print(message)
-        print("=======================")
+        self._send(self, recipient, message)
         self.notifications.append(
             {
                 "recipient": recipient,
@@ -32,7 +28,11 @@ class DevNotificationService(NotificationService):
         )
 
     def _send(self, recipient, message):
-        pass
+        print("=======================")
+        print(f"[DEV] Notification to {recipient}")
+        print("=======================")
+        print(message)
+        print("=======================")
 
     def list_notifications(self) -> List[Dict[str, str]]:
         """
