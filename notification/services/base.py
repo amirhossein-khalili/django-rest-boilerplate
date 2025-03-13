@@ -8,15 +8,31 @@ class NotificationService(ABC):
     Defines the interface for sending notifications and retrieving sent notifications.
     """
 
-    @abstractmethod
-    def send_notification(self, recipient: str, message: str) -> None:
-        """
-        Send a notification to a recipient.
+    NOTIFICATION_TYPE = None
 
-        :param recipient: The recipient of the notification (email, phone number, etc.).
-        :param message: The content of the notification.
+    @abstractmethod
+    def _send(self, recipient: str, message: str) -> bool:
+        """
+        Subclasses must implement this to actually send a notification.
+        Should return True if successful, False otherwise.
         """
         pass
+
+    def send_notification(self, recipient: str, message: str) -> None:
+        """
+        Send a notification and store the result.
+        """
+        if not self.NOTIFICATION_TYPE:
+            raise ValueError("NOTIFICATION_TYPE must be defined in the subclass.")
+
+        success = self._send(recipient, message)
+
+        Notification.objects.create(
+            recipient=recipient,
+            message=message,
+            notification_type=self.NOTIFICATION_TYPE,
+            status=success,
+        )
 
     @abstractmethod
     def list_notifications(self) -> List[Dict[str, str]]:

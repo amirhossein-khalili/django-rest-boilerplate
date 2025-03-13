@@ -1,60 +1,28 @@
-from typing import Dict, List
-
 from django.conf import settings
 from django.core.mail import send_mail
 
 from notification.enums import NotificationType
-from notification.models import Notification
 from notification.services.base import NotificationService
+from notification.services.mixins import NotificationMixin
 
 
-class EmailNotificationService(NotificationService):
+class EmailNotificationService(NotificationService, NotificationMixin):
     """
-    Concrete implementation of NotificationService for sending emails.
+    Sends email notifications.
     """
 
-    def send_notification(self, recipient: str, message: str) -> None:
+    NOTIFICATION_TYPE = NotificationType.EMAIL.value
+
+    def _send(self, recipient: str, message: str) -> bool:
         """
-        Send an email notification.
-
-        :param recipient: The recipient's email address.
-        :param message: The email content.
+        Sends an email using Django's email backend.
         """
         subject = "New Notification"
         from_email = settings.DEFAULT_FROM_EMAIL
 
         try:
             send_mail(subject, message, from_email, [recipient])
-            Notification.objects.create(
-                recipient=recipient,
-                message=message,
-                notification_type=NotificationType.EMAIL.value,
-                status=True,
-            )
+            return True
         except Exception as e:
             print(f"Failed to send email: {e}")
-            Notification.objects.create(
-                recipient=recipient,
-                message=message,
-                notification_type=NotificationType.EMAIL.value,
-                status=False,
-            )
-
-    def list_notifications(self) -> List[Dict[str, str]]:
-        """
-        Retrieve a list of sent email notifications.
-
-        :return: A list of dictionaries containing notification details.
-        """
-        notifications = Notification.objects.filter(
-            notification_type=NotificationType.EMAIL.value,
-        ).order_by("-sent_at")
-        return [
-            {
-                "recipient": n.recipient,
-                "message": n.message,
-                "sent_at": n.sent_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "status": "Sent" if n.status else "Failed",
-            }
-            for n in notifications
-        ]
+            return False

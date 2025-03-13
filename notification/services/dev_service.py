@@ -31,6 +31,9 @@ class DevNotificationService(NotificationService):
             }
         )
 
+    def _send(self, recipient, message):
+        pass
+
     def list_notifications(self) -> List[Dict[str, str]]:
         """
         Retrieve a list of notifications that were 'sent' (printed) in development.
