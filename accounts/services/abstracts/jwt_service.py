@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class wAbstractJWTService(ABC):
+class AbstractJWTService(ABC):
     @abstractmethod
     def generate_token(self, user) -> str:
         """
