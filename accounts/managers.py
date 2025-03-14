@@ -10,6 +10,7 @@ class UserManager(BaseUserManager):
     def create_user(self, phone, password=None, **extra_fields):
         if not phone:
             raise ValueError("The phone number must be provided")
+        phone = "".join(filter(str.isdigit, phone))
         user = self.model(phone=phone, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
