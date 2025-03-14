@@ -11,10 +11,5 @@ class UserValidationServiceImpl(AbstractUserValidationService):
         """
         return User.objects.filter(phone=phone).exists()
 
-    def is_user_blocked(self, user) -> bool:
-        # NOTE : this part should complete
-        pass
-
     def has_user_access(self, user) -> bool:
-        # NOTE : this part should complete
-        pass
+        return user.is_active

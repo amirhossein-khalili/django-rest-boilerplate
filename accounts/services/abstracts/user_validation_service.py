@@ -10,13 +10,6 @@ class AbstractUserValidationService(ABC):
         pass
 
     @abstractmethod
-    def is_user_blocked(self, user) -> bool:
-        """
-        Check if the user is blocked.
-        """
-        pass
-
-    @abstractmethod
     def has_user_access(self, user) -> bool:
         """
         Check if the user has access to the system (e.g., active, verified, etc.).

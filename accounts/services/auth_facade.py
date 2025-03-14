@@ -15,13 +15,20 @@ class AuthenticationFacade:
 
     def verify_otp_and_authenticate(self, phone: str, otp: str) -> dict:
         if self.otp_service.verify_otp(phone, otp):
+
             if self.user_validation.user_exists(phone):
                 user = User.objects.get(phone=phone)
             else:
                 user = User.objects.create_user(phone=phone)
-            tokens = self.jwt_service.generate_token(user)
-            return {
-                "tokens": tokens,
-                "is_new_user": not self.user_validation.user_exists(phone),
-            }
+
+            if self.user_validation.has_user_access(user):
+                tokens = self.jwt_service.generate_token(user)
+
+                return {
+                    "tokens": tokens,
+                    "is_new_user": not self.user_validation.user_exists(phone),
+                }
+
+            raise PermissionError("User has no access ")
+
         raise ValueError("Invalid OTP")
