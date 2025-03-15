@@ -1,6 +1,11 @@
 from django.db import models
 
-from .enums import NotificationChoices
+
+class NotificationType(models.TextChoices):
+    EMAIL = "E"
+    SMS = "S"
+    PUSH = "P"
+    DEV = "D"
 
 
 class Notification(models.Model):
@@ -10,7 +15,7 @@ class Notification(models.Model):
     message = models.TextField(help_text="Notification content")
     notification_type = models.CharField(
         max_length=10,
-        choices=NotificationChoices.choices,
+        choices=NotificationType.choices,
         help_text="Type of notification",
     )
     sent_at = models.DateTimeField(

@@ -1,12 +1,12 @@
 from django.conf import settings
 from django.core.mail import send_mail
 
-from notification.enums import NotificationType
+from notification.models import NotificationType
 from notification.services.base import NotificationService
 from notification.services.mixins import NotificationMixin
 
 
-class EmailNotificationService(NotificationService, NotificationMixin):
+class EmailNotificationService(NotificationMixin, NotificationService):
     """
     Sends email notifications.
     """
@@ -17,7 +17,7 @@ class EmailNotificationService(NotificationService, NotificationMixin):
         """
         Sends an email using Django's email backend.
         """
-        subject = setting.DEFAULT_SUBJECT_EMAIL
+        subject = settings.DEFAULT_SUBJECT_EMAIL
         from_email = settings.DEFAULT_FROM_EMAIL
 
         try:

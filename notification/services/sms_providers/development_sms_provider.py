@@ -9,12 +9,10 @@ class DevelopmentSMSProvider(BaseSMSProvider):
     SMS provider using console.
     """
 
-    def __init__(self):
-        pass
-
     def send_sms(self, recipient: str, message: str) -> bool:
         print("=======================")
         print(f"[DEV] send sms to {recipient}")
         print("=======================")
         print(message)
         print("=======================")
+        return True

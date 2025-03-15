@@ -1,17 +1,17 @@
 import requests
 from django.conf import settings
 
-from notification.enums import NotificationType
+from notification.models import NotificationType
 from notification.services.base import NotificationService
 from notification.services.mixins import NotificationMixin
 
 
-class PushNotificationService(NotificationService, NotificationMixin):
+class PushNotificationService(NotificationMixin, NotificationService):
     """
     Sends push notifications using Firebase.
     """
 
-    NOTIFICATION_TYPE = NotificationType.PUSH.value
+    NOTIFICATION_TYPE = NotificationType.PUSH
 
     def __init__(self):
         self.fcm_api_url = "https://fcm.googleapis.com/fcm/send"

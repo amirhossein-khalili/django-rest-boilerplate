@@ -1,17 +1,18 @@
 from typing import Dict, List
 
-from notification.enums import NotificationType
-from notification.models import Notification
+from notification.models import NotificationType
 from notification.services.base import NotificationService
 from notification.services.sms_providers.base_sms_provider import BaseSMSProvider
 
+from .mixins import NotificationMixin
 
-class SMSNotificationService(NotificationService):
+
+class SMSNotificationService(NotificationMixin, NotificationService):
     """
     Concrete implementation of NotificationService for sending SMS using a provider.
     """
 
-    NOTIFICATION_TYPE = NotificationType.SMS.value
+    NOTIFICATION_TYPE = NotificationType.SMS
 
     def __init__(self, sms_provider: BaseSMSProvider):
         """

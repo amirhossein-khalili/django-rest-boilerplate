@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
 
+from notification.models import Notification
+
 
 class NotificationService(ABC):
     """
@@ -26,7 +28,6 @@ class NotificationService(ABC):
             raise ValueError("NOTIFICATION_TYPE must be defined in the subclass.")
 
         success = self._send(recipient, message)
-
         Notification.objects.create(
             recipient=recipient,
             message=message,
