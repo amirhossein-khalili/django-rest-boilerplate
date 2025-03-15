@@ -1,15 +1,12 @@
-from rest_framework import pagination, permissions, status, viewsets
-from rest_framework.decorators import action
+from rest_framework import generics, pagination, permissions
 
-from notification.models import Notification
+from notification.models import Notification, NotificationType
 from notification.serializers import NotificationSerializer
-
-from .enums import NotificationType
 
 
 class NotificationPagination(pagination.PageNumberPagination):
     """
-    Custom pagination for notifications.
+    Custom pagination class for notifications.
     """
 
     page_size = 10
@@ -17,25 +14,24 @@ class NotificationPagination(pagination.PageNumberPagination):
     max_page_size = 50
 
 
-class NotificationViewSet(viewsets.ViewSet):
+class PushNotificationListView(generics.ListAPIView):
     """
-    API endpoints for listing notifications.
-    Users can only see their own push notifications (in apps or website notifications).
+    API endpoint for listing paginated in-app (push) notifications for the authenticated user.
+
+    This view ensures that:
+      - Only push notifications are returned.
+      - Each user sees only notifications addressed to their phone number.
     """
 
+    serializer_class = NotificationSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = NotificationPagination
 
-    def list(self, request):
+    def get_queryset(self):
         """
-        Retrieve a paginated list of sent notifications for the authenticated user.
+        Return a queryset of push notifications filtered by the authenticated user's phone number.
         """
-        notifications = Notification.objects.filter(
-            notification_type=NotificationType.PUSH, recipient=request.user.email
+        return Notification.objects.filter(
+            notification_type=NotificationType.PUSH,
+            recipient=self.request.user.phone,
         ).order_by("-sent_at")
-
-        paginator = self.pagination_class()
-        paginated_notifications = paginator.paginate_queryset(notifications, request)
-
-        serializer = NotificationSerializer(paginated_notifications, many=True)
-        return paginator.get_paginated_response(serializer.data)
