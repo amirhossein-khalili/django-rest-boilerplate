@@ -1,10 +1,9 @@
-# accounts/views.py
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import OTPSerializer
-from .services.auth_facade import AuthenticationFacade
+from .services.authentication_facade import AuthenticationFacade
 
 
 class AuthenticationView(APIView):
