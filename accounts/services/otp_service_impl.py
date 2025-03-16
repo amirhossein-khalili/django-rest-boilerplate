@@ -4,10 +4,15 @@ from django.utils import timezone
 
 from accounts.models import OTP
 from accounts.services.abstracts.otp_service import AbstractOTPService
-from notification import NotificationType, notification_service
+from notification.models import NotificationType
+from notification.provider import notification_service_creator
 
 
 class OTPServiceImpl(AbstractOTPService):
+
+    def __init__(self, *args, **kwargs):
+        self._notification_service = notification_service_creator(NotificationType.DEV)
+
     def send_otp(self, phone: str) -> dict:
         """
         Generate a 4-digit OTP, store it in the database, and trigger the sending mechanism.
@@ -17,9 +22,7 @@ class OTPServiceImpl(AbstractOTPService):
         otp_code = str(random.randint(1000, 9999))
         otp_instance = OTP.objects.create(phone=phone, code=otp_code)
 
-        # send sms to user
-        sms_service = notification_service(NotificationType.SMS)
-        sms_service.send_notification(
+        self._notification_service.send_notification(
             recipient=phone, message=f"you otp code is \n {otp_code}"
         )
 

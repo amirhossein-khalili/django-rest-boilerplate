@@ -8,4 +8,4 @@ class NotificationConfig(AppConfig):
 
     def ready(self):
         from .models import NotificationType
-        from .provider import notification_service
+        from .provider import notification_service_creator

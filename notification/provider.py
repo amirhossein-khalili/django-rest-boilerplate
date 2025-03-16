@@ -8,7 +8,7 @@ from notification.factories.sms_factory import SMSNotificationFactory
 from .models import NotificationType
 
 
-def notification_service(notification_type=None):
+def notification_service_creator(notification_type=None):
     """
     Provides a notification factory instance based on the provided type,
     or falls back to the default type specified in settings.
@@ -22,22 +22,16 @@ def notification_service(notification_type=None):
     :return: An instance of a NotificationFactory or a NotificationService (for debug).
     """
 
-    # type_str = (
-    #     notification_type or getattr(settings, "DEFAULT_NOTIFICATION_TYPE", "email")
-    # ).lower()
-
-    # try:
-    #     notification_type = NotificationType(type_str)
-    # except ValueError:
-    #     raise ValueError(f"Invalid notification type '{type_str}' specified")
-
+    # notification_type = notification_type or getattr(
+    #     settings, "DEFAULT_NOTIFICATION_TYPE", None
+    # )
     if notification_type == NotificationType.EMAIL:
         return EmailNotificationFactory().create_notification_service()
     elif notification_type == NotificationType.PUSH:
         return PushNotificationFactory().create_notification_service()
     elif notification_type == NotificationType.SMS:
         return SMSNotificationFactory().create_notification_service()
-    elif notification_type == NotificationType.EMAIL and settings.DEBUG == True:
+    elif settings.DEBUG == True:
         return DevNotificationFactory().create_notification_service()
     else:
-        raise ValueError(f"Invalid notification type '{type_str}' specified")
+        raise ValueError(f"Invalid notification type '{notification_type}' specified")
