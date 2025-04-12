@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "accounts.apps.AccountsConfig",
     "notification.apps.NotificationConfig",
+    "articles.apps.ArticlesConfig",
 ]
 
 MIDDLEWARE = [

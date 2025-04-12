@@ -14,7 +14,7 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     "delete-expired-otps-every-5-minutes": {
-        "task": "your_app.tasks.delete_expired_otps",
-        "schedule": 300.0,
+        "task": "accounts.tasks.delete_expired_otps",
+        "schedule": 30.0,
     },
 }
