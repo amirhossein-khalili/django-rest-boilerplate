@@ -23,6 +23,7 @@ class TestDevNotificationService(TestCase):
     def test_send_notification_creates_notification(self):
         service = DevNotificationService()
 
+        # Capture printed output to verify the development message
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
@@ -32,6 +33,7 @@ class TestDevNotificationService(TestCase):
 
         self.assertIn("Test message", output)
 
+        # Verify that a Notification record was created with the correct attributes
         notification = Notification.objects.last()
         self.assertEqual(notification.recipient, "dev@example.com")
         self.assertEqual(notification.message, "Test message")
@@ -47,14 +49,17 @@ class TestEmailNotificationService(TestCase):
 
         service.send_notification("email@example.com", "Email message")
 
+        # Verify that the email was sent using Django's test email backend
         self.assertEqual(len(mail.outbox), 1)
         email = mail.outbox[0]
         self.assertEqual(email.subject, "Test Subject")
         self.assertEqual(email.body, "Email message")
 
+        # Verify that a Notification record was created correctly
         notification = Notification.objects.last()
         self.assertEqual(notification.recipient, "email@example.com")
         self.assertEqual(notification.message, "Email message")
+        # Email service may use a string value for type depending on your implementation
         self.assertEqual(notification.notification_type, NotificationType.EMAIL.value)
 
 
@@ -73,6 +78,7 @@ class TestPushNotificationService(TestCase):
 
         service.send_notification("push_recipient", "Push message")
 
+        # Verify that a Notification record was created correctly for push notifications
         notification = Notification.objects.last()
         self.assertEqual(notification.recipient, "push_recipient")
         self.assertEqual(notification.message, "Push message")
@@ -97,6 +103,7 @@ class TestSMSNotificationService(TestCase):
 
         self.assertTrue(dummy_provider.called)
 
+        # Verify that a Notification record was created correctly for SMS notifications
         notification = Notification.objects.last()
         self.assertEqual(notification.recipient, "sms@example.com")
         self.assertEqual(notification.message, "SMS message")
