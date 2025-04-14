@@ -30,3 +30,12 @@ celerybeat :
 
 celeryworker:
 	celery -A core worker -l info
+
+
+minio:
+	docker run --name minio_boilerplate_container -p 9000:9000 -p 9001:9001 \
+	-e MINIO_ROOT_USER=minioadmin \
+	-e MINIO_ROOT_PASSWORD=minioadmin \
+	-v minio_data:/data \
+	--rm \
+	-d minio/minio:latest server /data --console-address ":9001"
